@@ -1,185 +1,290 @@
-let cardContainer = document.querySelector("main"); 
+let cardContainer = document.getElementById("resultados-pesquisa");
 let containerFiltros = document.getElementById("container-filtros");
-let campoBusca = document.querySelector("header input");
-let botaoBusca = document.querySelector("#botao-busca");
-let dados = [];
+let campoBusca = document.getElementById("campo-busca");
+let botaoBusca = document.getElementById("botao-busca");
 
-// Variável para controlar o filtro ativo
+let dados = [];
 let filtroAtivo = null;
+
+if (!cardContainer) {
+    console.warn("Criando container via JS (Verifique seu HTML!)");
+    cardContainer = document.createElement("div");
+    cardContainer.id = "resultados-pesquisa";
+    const layout = document.querySelector(".layout-principal") || document.querySelector("main");
+    layout.appendChild(cardContainer);
+}
 
 async function carregarDados() {
     try {
-        let resposta = await fetch("app.json"); 
-        dados = await resposta.json();
-        
-        gerarBotoesFiltro(dados); // Gera os botões das tags
-        renderizarCards(dados);   // Mostra as receitas
-        iniciarSlideshow();       // Liga o carrossel de fotos
-    } catch (error) {
-        console.error("Erro:", error);
+        let response = await fetch("./data.json");
+
+        if (!response.ok) throw new Error("Erro ao carregar JSON");
+
+        dados = await response.json();
+
+        gerarBotoesFiltro(dados);
+        cardContainer.innerHTML = `
+            <div style="text-align:center; padding: 2rem; color: #d68c45;">
+                <h3>👨‍🍳 Selecione uma categoria acima para começar!</h3>
+            </div>
+        `;
+
+        iniciarSlideshow();
+
+    } catch (err) {
+        console.error("Falha ao carregar dados:", err);
     }
 }
 
-// --- FUNÇÃO 1: FILTROS POR TAG ---
-function gerarBotoesFiltro(listaReceitas) {
-    // Set é uma lista que não aceita repetição (ótimo para pegar tags únicas)
-    let tagsUnicas = new Set();
-    
-    listaReceitas.forEach(receita => {
-        receita.tags.forEach(tag => tagsUnicas.add(tag.toLowerCase()));
-    });
+function gerarBotoesFiltro(lista) {
+    const tagsUnicas = new Set();
+    lista.forEach(r => r.tags.forEach(t => tagsUnicas.add(t.toLowerCase())));
+    const todasTags = Array.from(tagsUnicas).sort();
 
-    // Cria o botão "Todas"
-    containerFiltros.innerHTML = `
-        <button class="tag-btn ativo" onclick="filtrarPorTag(this, null)">Todas</button>
+    containerFiltros.innerHTML = "";
+
+    const divTodas = document.createElement("div");
+    divTodas.style.width = "100%";
+    divTodas.style.textAlign = "center";
+    divTodas.style.marginBottom = "1.5rem";
+    divTodas.innerHTML = `
+        <button class="tag-btn ativo" onclick="filtrarPorTag(this, null)">
+            🌟 Ver Todas as Receitas
+        </button>
     `;
+    containerFiltros.appendChild(divTodas);
 
-    // Cria os botões das outras tags
-    tagsUnicas.forEach(tag => {
-        // Capitaliza a primeira letra (ex: "doce" vira "Doce")
-        let nomeTag = tag.charAt(0).toUpperCase() + tag.slice(1);
-        
-        // Adiciona o botão no HTML
-        containerFiltros.innerHTML += `
-            <button class="tag-btn" onclick="filtrarPorTag(this, '${tag}')">${nomeTag}</button>
-        `;
+    const dicionario = {
+        "Doces & Sobremesas 🍩": ["biscoito", "bolo", "brownie", "cacau", "caramelo", "chocolate", "cinnamon roll", "cookie", "doce", "doce de leite", "doce-salgado", "donut", "eclair", "fruta", "frutas", "frutas vermelhas", "gelado", "goiabada", "muffin", "pão doce", "sobremesa", "torta"],
+        "Pães & Padaria 🥖": ["baguete", "brioche", "fermentação", "fermentação lenta", "fermentação natural", "focaccia", "integral", "pré-fermento", "pão", "pão de queijo", "pão enriquecido", "pão recheado", "pão rústico", "pão salgado", "sourdough", "levain"],
+        "Salgados & Refeições 🧀": ["almoço", "carne", "carne seca", "frango", "lanche", "queijo", "salgado", "empada", "quiche", "sanduíche"],
+        "Culinária Internacional 🌍": ["alemão", "americano", "brasileiro", "clássico brasileiro", "europeu", "francês", "inglês", "internacional", "italiano", "mediterrâneo", "mineiro", "português", "árabe", "australiano"],
+        "Ingredientes & Sabores 🧂": ["alcoólico", "azeite", "café", "canela", "castanhas", "centeio", "coco", "cítrico", "grãos", "laranja", "limão", "manteiga", "nozes", "pistache", "multigrãos", "mandioca", "milho", "gema", "vegetal", "vegetariano", "refrescante", "saboroso", "aromático"],
+        "Técnicas & Características 🧪": ["alta hidratação", "artesanal", "assado", "frito", "fritura", "sem forno", "sem glúten", "enriquecido", "especial", "especialidade", "especiarias", "fitness", "funcional", "folhado", "croissant", "choux", "rápido", "rústico", "tradicional", "macio", "semente"],
+        "Ocasiões & Temas 🎉": ["café da manhã", "café da tarde", "chá da tarde", "festa", "outono", "gourmet"]
+    };
+
+    let gavetas = {
+        "Doces & Sobremesas 🍩": [],
+        "Pães & Padaria 🥖": [],
+        "Salgados & Refeições 🧀": [],
+        "Culinária Internacional 🌍": [],
+        "Ingredientes & Sabores 🧂": [],
+        "Técnicas & Características 🧪": [],
+        "Ocasiões & Temas 🎉": [],
+        "Outros Ingredientes 🧂": []
+    };
+
+    todasTags.forEach(tag => {
+        let categorizado = false;
+        for (let [categoria, palavrasChave] of Object.entries(dicionario)) {
+            if (palavrasChave.some(palavra => tag.includes(palavra))) {
+                gavetas[categoria].push(tag);
+                categorizado = true;
+                break;
+            }
+        }
+        if (!categorizado) {
+            gavetas["Outros Ingredientes 🧂"].push(tag);
+        }
     });
+
+    for (let [nomeCategoria, listaTags] of Object.entries(gavetas)) {
+        if (listaTags.length > 0) {
+            listaTags.sort();
+
+            const containerCategoria = document.createElement("div");
+            containerCategoria.style.width = "100%";
+
+            const titulo = document.createElement("h4");
+            titulo.innerText = nomeCategoria;
+            titulo.className = "titulo-categoria";
+
+            const divBotoes = document.createElement("div");
+            divBotoes.className = "grupo-tags escondido";
+
+            titulo.onclick = () => {
+
+                if (divBotoes.classList.contains("escondido")) {
+                    divBotoes.classList.remove("escondido");
+                    divBotoes.style.display = "flex";
+                    titulo.classList.add("aberta");
+                } else {
+                    divBotoes.classList.add("escondido");
+                    divBotoes.style.display = "none";
+                    titulo.classList.remove("aberta");
+                }
+            };
+
+
+            listaTags.forEach(tag => {
+                let nome = tag.charAt(0).toUpperCase() + tag.slice(1);
+                divBotoes.innerHTML += `
+                    <button class="tag-btn" onclick="filtrarPorTag(this, '${tag}')">
+                        ${nome}
+                    </button>
+                `;
+            });
+
+
+            containerCategoria.appendChild(titulo);
+            containerCategoria.appendChild(divBotoes);
+            containerFiltros.appendChild(containerCategoria);
+        }
+    }
 }
 
-// Essa função precisa ser global (window) para o onclick do HTML funcionar ou usamos addEventListener
-window.filtrarPorTag = function(elementoBotao, tag) {
-    // Remove a classe 'ativo' de todos os botões
-    document.querySelectorAll('.tag-btn').forEach(btn => btn.classList.remove('ativo'));
-    // Adiciona no botão clicado
-    elementoBotao.classList.add('ativo');
-
-    filtroAtivo = tag; // Atualiza a variável global
-    aplicarFiltros();  // Chama a função que combina Tag + Busca Texto
+function criarBotaoTag(tag, container) {
+    let nome = tag.charAt(0).toUpperCase() + tag.slice(1);
+    container.innerHTML += `
+        <button class="tag-btn" onclick="filtrarPorTag(this, '${tag}')">
+            ${nome}
+        </button>
+    `;
 }
+window.filtrarPorTag = function (btn, tag) {
+    document.querySelectorAll(".tag-btn")
+        .forEach(b => b.classList.remove("ativo"));
 
-// --- FUNÇÃO CENTRAL DE BUSCA (Combina Texto + Tag) ---
+    btn.classList.add("ativo");
+
+    filtroAtivo = tag;
+    aplicarFiltros();
+};
+
 function aplicarFiltros() {
-    const termoBusca = campoBusca.value.toLowerCase();
-    
-    const dadosFiltrados = dados.filter(receita => {
-        // Verifica se bate com o texto digitado
-        const bateTexto = receita.titulo.toLowerCase().includes(termoBusca) || 
-                          receita.descricao.toLowerCase().includes(termoBusca);
-        
-        // Verifica se bate com a tag clicada (se houver alguma clicada)
-        const bateTag = filtroAtivo === null || receita.tags.some(t => t.toLowerCase() === filtroAtivo);
+    const termo = campoBusca.value.trim().toLowerCase();
 
-        return bateTexto && bateTag;
+    const filtrado = dados.filter(receita => {
+        const matchTexto =
+            receita.titulo.toLowerCase().includes(termo) ||
+            receita.descricao.toLowerCase().includes(termo);
+
+        const matchTag =
+            filtroAtivo === null ||
+            receita.tags.some(t => t.toLowerCase() === filtroAtivo);
+
+        return matchTexto && matchTag;
     });
 
-    renderizarCards(dadosFiltrados);
+    renderizarCards(filtrado);
 }
 
-// Atualizei a iniciarBusca para usar a lógica centralizada
 function iniciarBusca() {
     aplicarFiltros();
 }
 
-function renderizarCards(listaReceitas) {
-    // (MANTENHA SUA FUNÇÃO renderizarCards ANTIGA AQUI, ELA ESTAVA ÓTIMA!)
-    // ... código do details, map, join, etc...
-    // Vou resumir aqui para não ficar gigante a resposta, mas use a da resposta anterior
-    cardContainer.innerHTML = ""; 
-    // ... (restante do código de renderização) ...
-    // Se quiser, colo ela inteira de novo.
-    
-    // Pequena repetição apenas para garantir que funcione se você copiar/colar:
-    if (listaReceitas.length === 0) {
-        cardContainer.innerHTML = "<p style='text-align:center; width:100%'>Nenhuma receita encontrada... 🥖</p>";
+function renderizarCards(lista) {
+    cardContainer.innerHTML = "";
+
+    if (lista.length === 0) {
+        cardContainer.innerHTML = `
+            <div style="text-align:center; padding:2rem;">
+                <h3>Puxa, a massa desandou! 😕</h3>
+                <p>Não encontramos nenhuma receita com esses critérios.</p>
+            </div>
+        `;
         return;
     }
 
-    for (let receita of listaReceitas) {
-        let article = document.createElement("article");
-        let listaIngredientes = receita.ingredientes.map(item => `<li>${item}</li>`).join('');
-        let listaPreparo = receita.modo_preparo.map(passo => `<li>${passo}</li>`).join('');
+    lista.forEach(receita => {
+        const article = document.createElement("article");
+
+        const ingredientes = receita.ingredientes
+            .map(i => `<li>${i}</li>`).join("");
+
+        const preparo = receita.modo_preparo
+            .map(p => `<li>${p}</li>`).join("");
+
+        const tags = receita.tags
+            .map(t => `<span class="tag-card">#${t}</span>`).join("");
 
         article.innerHTML = `
             <h2>${receita.titulo}</h2>
+            <div class="tags-container">${tags}</div>
+
             <p><strong>${receita.descricao}</strong></p>
-            <div style="display: flex; gap: 1rem; color: #d68c45; margin-bottom: 1rem;">
+
+            <div class="info-receita">
                 <span>⏱️ ${receita.tempo_total}</span>
                 <span>⭐ ${receita.dificuldade}</span>
             </div>
-            <details><summary style="cursor: pointer; color: #5d4037;">Ver Ingredientes 🥚</summary><ul>${listaIngredientes}</ul></details>
-            <details><summary style="cursor: pointer; color: #5d4037; margin-top: 0.5rem;">Modo de Preparo 👩‍🍳</summary><ol style="color: #5d4037;">${listaPreparo}</ol></details>
+
+            <details>
+                <summary>Ver Ingredientes 🥚</summary>
+                <ul>${ingredientes}</ul>
+            </details>
+
+            <details>
+                <summary>Modo de Preparo 👩‍🍳</summary>
+                <ol>${preparo}</ol>
+            </details>
         `;
-        cardContainer.appendChild(article); // IMPORTANTE: Mudei para adicionar no main, não dentro do container de filtros
-    }
+
+        cardContainer.appendChild(article);
+    });
 }
 
-// --- FUNÇÃO 2: SLIDESHOW AUTOMÁTICO ---
-// --- FUNÇÃO 2: SLIDESHOW AUTOMÁTICO (Corrigida) ---
 function iniciarSlideshow() {
-    // Busca todas as imagens que tenham a classe .slide
-    let slides = document.querySelectorAll('.hero-slideshow .slide');
-    
-    // Verificação de segurança: se não achar imagens, avisa no console
-    if (slides.length === 0) {
-        console.warn("Slideshow: Nenhuma imagem com a classe '.slide' encontrada!");
-        return;
-    }
+    const slides = document.querySelectorAll(".hero-slideshow .slide");
+    if (slides.length === 0) return;
 
     let index = 0;
-
-    // Procura qual imagem já está ativa para começar a contar dela
-    slides.forEach((slide, i) => {
-        if (slide.classList.contains('active')) {
-            index = i;
-        }
-    });
+    slides[0].classList.add("active");
 
     setInterval(() => {
-        // Remove a classe da imagem atual
-        slides[index].classList.remove('active');
-        
-        // Calcula a próxima (volta para 0 se chegar no fim)
+        slides[index].classList.remove("active");
         index = (index + 1) % slides.length;
-        
-        // Adiciona a classe na próxima imagem
-        slides[index].classList.add('active');
-    }, 4000); // 4000ms = 4 segundos
+        slides[index].classList.add("active");
+    }, 4000);
 }
 
-// --- EVENTOS FINAIS ---
-// Certifique-se de chamar a função aqui no final!
+const modalSobre = document.getElementById("modal-sobre");
+const modalContato = document.getElementById("modal-contato");
+const btnFecharSobre = document.querySelector("#modal-sobre .fechar-modal");
+const btnFecharContato = document.querySelector(".fechar-modal-contato");
 
 
-// --- FUNÇÃO 3: MODAL SOBRE NÓS ---
-// Seleciona o link "Sobre nós" no footer. 
-// ATENÇÃO: Adicione id="link-sobre" no <a href> do HTML do footer para isso funcionar fácil
-// Ou buscamos pelo texto:
-let linksFooter = document.querySelectorAll('.footer-links a');
-let modal = document.getElementById("modal-sobre");
-let btnFechar = document.querySelector(".fechar-modal");
+function abrirModal(modal) {
+    if (modal) {
+        modal.classList.add("mostrar");
+    } else {
+        console.error("Erro: Modal não encontrado no HTML");
+    }
+}
 
-// Procura qual link é o "Sobre nós"
+function fecharModal(modal) {
+    if (modal) modal.classList.remove("mostrar");
+}
+
+const linksFooter = document.querySelectorAll(".footer-links a");
+
 linksFooter.forEach(link => {
-    if(link.innerText.includes("Sobre nós")) {
-        link.addEventListener("click", (e) => {
-            e.preventDefault(); // Não recarregar a página
-            modal.classList.add("mostrar");
-        });
+    const texto = link.innerText.toLowerCase();
+
+    if (texto.includes("sobre")) {
+        link.onclick = (e) => {
+            e.preventDefault();
+            abrirModal(modalSobre);
+        };
+    }
+
+    if (texto.includes("contato")) {
+        link.onclick = (e) => {
+            e.preventDefault();
+            abrirModal(modalContato);
+        };
     }
 });
 
-btnFechar.addEventListener("click", () => {
-    modal.classList.remove("mostrar");
-});
+if (btnFecharSobre) btnFecharSobre.onclick = () => fecharModal(modalSobre);
+if (btnFecharContato) btnFecharContato.onclick = () => fecharModal(modalContato);
 
-// Fecha se clicar fora da caixinha branca
-window.addEventListener("click", (e) => {
-    if (e.target == modal) {
-        modal.classList.remove("mostrar");
-    }
-});
+window.onclick = (e) => {
+    if (e.target === modalSobre) fecharModal(modalSobre);
+    if (e.target === modalContato) fecharModal(modalContato);
+};
 
-// Eventos Iniciais
-window.onload = carregarDados;
+window.addEventListener("load", carregarDados);
 campoBusca.addEventListener("keyup", iniciarBusca);
-if(botaoBusca) botaoBusca.addEventListener("click", iniciarBusca);
+botaoBusca.addEventListener("click", iniciarBusca);

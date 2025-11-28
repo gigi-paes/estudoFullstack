@@ -490,7 +490,8 @@
     "tags": [
       "doce",
       "americano",
-      "frito"
+      "frito",
+      "donut"
     ]
   },
   {
@@ -1463,7 +1464,7 @@
     "descricao": "A acidez vibrante do limão, a cremosidade do curd e o estalo doce da casquinha caramelizada.",
     "tags": [
       "doce",
-      "frances",
+      "francês",
       "cítrico",
       "sobremesa"
     ]
@@ -2766,7 +2767,7 @@
     "tags": [
       "pão rústico",
       "fermentação lenta",
-      "centio"
+      "centeio"
     ]
   },
   {
@@ -3154,7 +3155,7 @@
       "doce",
       "frito",
       "frutas vermelhas",
-      "donuts"
+      "donut"
     ]
   },
   {
@@ -3486,7 +3487,7 @@
     "tags": [
       "doce",
       "folhado",
-      "frances",
+      "francês",
       "café da manhã"
     ]
   },
@@ -3563,7 +3564,7 @@
     "descricao": "A delicadeza da pâtisserie francesa: base crocante, recheio úmido de amêndoas e o contraste azedinho das frutas vermelhas.",
     "tags": [
       "doce",
-      "frances",
+      "francês",
       "sobremesa",
       "frutas"
     ]
@@ -3675,7 +3676,7 @@
     "descricao": "A verdadeira baguete francesa: casca dura e estaladiça, miolo cremoso e irregular. O som da crosta ao ser quebrada.",
     "tags": [
       "pão",
-      "frances",
+      "francês",
       "tradicional",
       "fermentação"
     ]
@@ -3753,7 +3754,7 @@
     "tags": [
       "pão",
       "doce",
-      "frances",
+      "francês",
       "café da manhã"
     ]
   },
@@ -3804,7 +3805,7 @@
     "descricao": "Clássico francês inquestionável: base crocante, recheio cremoso e a combinação perfeita de queijo Gruyère e bacon.",
     "tags": [
       "salgado",
-      "frances",
+      "francês",
       "almoço",
       "tradicional"
     ]
@@ -4106,7 +4107,7 @@
     "descricao": "O brilho da pâtisserie francesa: massa leve e oca, recheio intenso de creme de chocolate Belga e cobertura espelhada.",
     "tags": [
       "doce",
-      "frances",
+      "francês",
       "sobremesa",
       "chocolate"
     ]
