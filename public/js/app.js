@@ -36,48 +36,36 @@ async function carregarDados() {
     }
 }
 
-// =============================
-//    AUTOCOMPLETE (SUGESTÕES) ✨
-// =============================
 const listaSugestoes = document.getElementById('lista-sugestoes');
 
 campoBusca.addEventListener('input', function() {
     const termo = this.value.toLowerCase().trim();
-    listaSugestoes.innerHTML = ''; // Limpa sugestões anteriores
+    listaSugestoes.innerHTML = '';
 
-    // Se digitou menos de 2 letras, não sugere nada (pra não ficar piscando)
     if (termo.length < 2) return;
-
-    // Filtra as receitas (Procura no Título)
     const sugestoes = dados.filter(receita => 
         receita.titulo.toLowerCase().includes(termo)
     );
 
-    // Pega só as 5 primeiras para não poluir
     const top5 = sugestoes.slice(0, 5);
-
-    // Cria os itens na tela
     top5.forEach(receita => {
         const li = document.createElement('li');
         
-        // Mostra Título e um ícone fofo
         li.innerHTML = `
             <span>${receita.titulo}</span>
             <span style="font-size: 0.8rem; color: #999;">📝 Ver receita</span>
         `;
 
-        // Quando clicar na sugestão
         li.onclick = () => {
-            campoBusca.value = receita.titulo; // Preenche o input
-            listaSugestoes.innerHTML = '';     // Some com a lista
-            iniciarBusca();                    // Faz a busca real e mostra o card
+            campoBusca.value = receita.titulo;
+            listaSugestoes.innerHTML = ''; 
+            iniciarBusca();  
         };
 
         listaSugestoes.appendChild(li);
     });
 });
 
-// Fecha a lista se clicar fora dela
 document.addEventListener('click', function(e) {
     if (!campoBusca.contains(e.target) && !listaSugestoes.contains(e.target)) {
         listaSugestoes.innerHTML = '';

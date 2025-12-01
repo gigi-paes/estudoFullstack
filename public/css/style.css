@@ -153,7 +153,6 @@ main {
     font-family: "Fredoka", sans-serif;
 }
 
-
 #sobre-o-projeto {
     text-align: center;
     background-color: #fff;
@@ -177,7 +176,6 @@ main {
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
-
 
 .pergunta-filtro {
     text-align: center;
@@ -220,7 +218,6 @@ main {
     font-weight: bold;
 }
 
-
 article {
     background: var(--card-bg);
     border-radius: 20px;
@@ -252,8 +249,6 @@ article p {
     font-size: 1.05rem;
     color: #795548;
 }
-
-
 
 .titulo-categoria {
     flex-basis: 100%;
@@ -288,18 +283,15 @@ article p {
     transform: scale(1.01);
 }
 
-
 .titulo-categoria::after {
     content: "▼";
     font-size: 0.8rem;
     transition: transform 0.3s ease;
 }
 
-
 .titulo-categoria.aberta::after {
     transform: rotate(180deg);
 }
-
 
 .grupo-tags {
     display: flex;
@@ -308,19 +300,13 @@ article p {
     gap: 0.5rem;
     width: 100%;
     margin-bottom: 1rem;
-
-
     overflow: hidden;
     transition: max-height 0.3s ease-out;
 }
 
-
 .escondido {
     display: none;
 }
-
-
-
 
 .tags-container {
     display: flex;
@@ -329,7 +315,6 @@ article p {
 
     margin-bottom: 1rem;
 }
-
 
 .tag-card {
     background-color: var(--tertiary-color);
@@ -602,37 +587,30 @@ details[open] summary::after {
     }
 }
 
-/* =========================================
-   11. AUTOCOMPLETE (SUGESTÕES DE BUSCA)
-   ========================================= */
-
-/* O container que segura o input e a lista */
 .search-wrapper {
-    position: relative; /* Importante para a lista absoluta funcionar */
+    position: relative;
     display: flex;
     align-items: center;
 }
 
-/* A caixa de sugestões (começa vazia/invisível) */
 .sugestoes-box {
     position: absolute;
-    top: 100%; /* Fica logo abaixo do input */
-    left: 15px; /* Alinhado levemente à direita da borda */
+    top: 100%;
+    left: 15px;
     background: #fff;
-    width: 30rem; /* Mesma largura do input aproximadamente */
+    width: 30rem;
     max-width: 90vw;
-    border-radius: 0 0 15px 15px; /* Arredonda só embaixo */
+    border-radius: 0 0 15px 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     list-style: none;
     padding: 0;
     margin: 0;
-    z-index: 1000; /* Fica por cima de tudo */
+    z-index: 1000;
     overflow: hidden;
     border: 1px solid var(--tertiary-color);
     border-top: none;
 }
 
-/* Cada item da lista */
 .sugestoes-box li {
     padding: 10px 20px;
     cursor: pointer;
@@ -650,7 +628,6 @@ details[open] summary::after {
     font-weight: bold;
 }
 
-/* Esconde a lista se estiver vazia */
 .sugestoes-box:empty {
     display: none;
 }
