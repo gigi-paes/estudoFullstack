@@ -14,7 +14,7 @@ Este projeto é uma aplicação Front-end que simula um livro de receitas digita
 
 Apesar de ser um site estático, ele consome dados de um arquivo JSON robusto (com mais de 100 receitas!) gerado via google ai studio, simulando o consumo de uma API real.
 
-🌐 **Acesse o projeto online:** [Clique aqui para visitar a Padaria!](https://gigi-paes.github.io/estudoFullstack/)
+🌐 **Acesse o projeto online:** [Clique aqui para visitar a Padaria!](https://gigi-paes.github.io/estudoFrontEnd/)
 
 ---
 
