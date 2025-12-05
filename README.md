@@ -1,15 +1,14 @@
 # 🥐 Padaria Artesanal - Receitas da Gigi
 
 ![Status do Projeto](https://img.shields.io/badge/Status-Concluído-brightgreen)
-![Licença](https://img.shields.io/badge/License-MIT-blue)
 
-> Um catálogo interativo e delicioso de receitas, desenvolvido durante a Imersão Fullstack da Alura com o Google Gemini.
+> Um catálogo interativo e delicioso de receitas, desenvolvido durante a Imersão da Alura com o Google Gemini.
 
 ---
 
-## 💻 Sobre o Projeto
+## Sobre o Projeto
 
-Bem-vindo à **Padaria Artesanal**! 🥖
+Bem-vindo à **Padaria Artesanal**!
 
 Este projeto é uma aplicação Front-end que simula um livro de receitas digital. O objetivo foi criar uma interface responsiva, amigável e funcional, onde o usuário pode buscar inspirações culinárias através de um sistema de busca inteligente ou navegando por categorias dinâmicas.
 
@@ -21,7 +20,7 @@ Apesar de ser um site estático, ele consome dados de um arquivo JSON robusto (c
 
 ## Preview
 
-![Preview do Site](https://github.com/gigi-paes/estudoFullstack/blob/main/public/img/preview.png?raw=true)
+![Preview do Site](https://github.com/gigi-paes/estudoFrontEnd/blob/main/public/img/preview.png?raw=true)
 
 ---
 
@@ -68,9 +67,11 @@ estudoFullstack/
     ├── js/
     │   └── app.js      # Lógica, fetch e filtros
     └── img/            # Imagens e assets
+```
 
----
+## Sobre:
+Este projeto foi desenvolvido para **fins de estudo**. Se tiver sugestão de melhoria, fique à vontade para entrar em contato comigo.
 
-* Este projeto foi desenvolvido para fins de estudo. Se tiver sugestão de melhoria fique a vontade para me contatar pelo linkedin ou email (giovanna05paes@gmail.com)!
-* Feito com docinhos por Giovanna Paes. 
-! https://www.linkedin.com/in/giovanna-paes-9720b234a
+* 📧 **Email**: giovanna05paes@gmail.com
+* 👔 **LinkedIn**: Giovanna Paes
+   
